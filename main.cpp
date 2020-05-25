@@ -50,20 +50,21 @@ int W, H, L, K;
 int NVERTICES = 0;
 
 void showBoard(bool flag){
-    for(int i=0;i<H;i++){
-        for(int j=0;j<W;j++){
+    for(int y=0;y<H;y++){
+        for(int x=0;x<W;x++){
             if(flag){
-                cout<<board[i][j].symbol<<" ";
+                printf(" %c ",board[x][y].symbol);
             } else{
-                if(board[i][j].vertexId==-1){
-                    cout<<". ";
+                if(board[x][y].vertexId==-1){
+                    printf(" . ");
                 }else{
-                    cout<<board[i][j].vertexId<<" ";
+                    printf("%2d ", board[x][y].vertexId);
                 }
             }
         }
         cout<<endl;
     }
+    cout<<endl;
 }
 class Vertex {
 public:
@@ -88,18 +89,21 @@ void readFromInput(string filename){
     board  = new Board*[W];
     for(int i = 0; i < W; ++i)
         board[i] = new Board[H];
+//    board  = new Board*[H];
+//    for(int i = 0; i < H; ++i)
+//        board[i] = new Board[W];
 
-    for(int i=0;i<H;i++){
-        for(int j=0;j<W;j++){
+    for(int y=0;y<H;y++){
+        for(int x=0;x<W;x++){
             char symbol;
             file >> symbol;
             if(symbol!='.'){
-                board[i][j].vertexId=NVERTICES;
+                board[x][y].vertexId=NVERTICES;
                 NVERTICES++;
             }else{
-                board[i][j].vertexId=-1;
+                board[x][y].vertexId=-1;
             }
-            board[i][j].symbol=symbol;
+            board[x][y].symbol=symbol;
         }
     }
 }
@@ -189,13 +193,13 @@ int main() {
 
 //    vertex *vertices;
     showBoard(true);
-
+//
     showBoard(false);
 
 
 
 
-//    cout<<"h";
+    cout<<"h";
 
 
 
