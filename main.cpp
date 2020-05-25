@@ -31,26 +31,45 @@ struct vertex {
 };
 
 
+char** board;
+
 int main() {
 
 //    ifstream infile("board");
 
     int W, H, L, K;
+    string boardName;
+    ifstream file("input.txt");
+    string line;
 
-    std::ifstream file("input.txt");
-
-    std::string line;
-
+    getline(file,line);
     istringstream iss(line);
     if (!(iss >> W >> H >> L >> K)) {
         cout<<"Incorrect board parameters!";
     }
-    cout<<W<<H;
+    cout<<W<<endl<<H<<endl<<L<<endl<<K;
 
-
-    while (std::getline(file, line)) {
-        std::cout << line << "\n";
+    getline(file,line);
+    istringstream iss1(line);
+    if (!(iss1 >> boardName)) {
+        cout<<"Incorrect board name!";
     }
+
+    board  = new char*[H];
+    for(int i = 0; i < H; ++i)
+        board[i] = new char[W];
+
+    while (getline(file, line)) {
+        istringstream iss(line);
+        for(int i=0;i<W;i++){
+            if (!(iss >> boardName)) {
+                cout<<"Incorrect park map!";
+            }
+        }
+    }
+
+
+
 
 //
 //    string line;
