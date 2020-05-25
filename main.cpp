@@ -7,43 +7,67 @@
 
 using namespace std;
 
-class Vertex{
+class Vertex {
 public:
     int x;
     int y;
-    Vertex(int x,int y){
-        this-> x =x;
+
+    Vertex(int x, int y) {
+        this->x = x;
         this->y = y;
     }
 
 };
 
-class Graph{
+class Graph {
 public:
     list<Vertex> vertices;
 
 };
 
-struct vertex{
+struct vertex {
     int x;
     int y;
 };
 
 
-
-
 int main() {
 
-    ifstream infile("board");
+//    ifstream infile("board");
 
-    int W,H,L,K;
-    string boardName;
+    int W, H, L, K;
 
-    string line;
-    getline(infile, line);
+    std::ifstream file("input.txt");
+
+    std::string line;
+
     istringstream iss(line);
-    if (!(iss >> W >> H >>L>>K)) { throw "Incorrect board parameters!"; } // error
-    cout<<W;
+    if (!(iss >> W >> H >> L >> K)) {
+        cout<<"Incorrect board parameters!";
+    }
+    cout<<W<<H;
+
+
+    while (std::getline(file, line)) {
+        std::cout << line << "\n";
+    }
+
+//
+//    string line;
+//
+//
+//    getline(infile, line);
+//
+//    cout<<"lineis"<<line;
+//
+
+//    istringstream iss(line);
+//    if (!(iss >> W >> H >> L >> K)) {
+//
+//        cout<<"Error";
+////        throw "Incorrect board parameters!";
+//    } // error
+//    cout << W;
 
 
 //
