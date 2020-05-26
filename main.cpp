@@ -50,7 +50,7 @@ Board ** board;
 int W, H, L, K;
 int NVERTICES = 0;
 
-void showVertices(set<int> *vertices){
+void showVertices(vector<set<int>> vertices){
     for(int v=0;v<NVERTICES;v++){
         printf("\n%d ->",v);
 
@@ -137,7 +137,7 @@ public:
 };
 
 
-set<int> *vertices;
+vector<set<int>>vertices;
 Vertex *verticesXY;
 set<Edge> edges;
 
@@ -181,23 +181,39 @@ void makeEdgesFromBoard(){
 }
 
 
-void edgesToVertices(set<Edge> edges,set<int> *vertices){
+vector<set<int>> edgesToVertices(set<Edge> edges){
+    vector<set<int>> vertices;
+
+    for(int i=0;i<NVERTICES;i++){
+        vertices.push_back(set<int>());
+    }
+
     for (auto edge : edges){
         vertices[edge.x].insert(edge.y);
         vertices[edge.y].insert(edge.x);
     }
+    return vertices;
 }
 
-//void resolveAloneVertices(set<int> *vertices){
-//    int lenVertices = sizeof(vertices)/sizeof(set<int>);
-//    for (int i=0;i<lenVertices;i++){
-//        if(vertices[i]) continue;
-//
-//
-//
-//
-//    }
-//}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+vector<set<int>> verticesCopy(vector<set<int>> vertices){
+    vector<set<int>> vertices1;
+    for(int i=0;i<NVERTICES;i++){
+        vertices1.push_back(set<int>(vertices[i]));
+    }
+    return vertices1;
+}
+
+void verticesDelete(vector<set<int>> vertices){ //TODO: check
+
+    for(int i=0;i<NVERTICES;i++){
+        vertices[i].clear();
+    }
+    vertices.clear();
+    vector<set<int>>().swap(vertices);
+}
 
 
 vector<int> outputVertices;
@@ -211,44 +227,77 @@ void VRalgorihm(){
 
 }
 
-set<int> * verticesCopy(set<int> *vertices){
-    set<int> *vertices1 = new set<int>[NVERTICES];
-    for(int i=0;i<NVERTICES;i++){
-        vertices1[i] = set<int>(vertices[i]);
-    }
-    return vertices1;
-}
-
-set<int> * verticesDelete(set<int> *vertices){
-
-    set<int> *vertices1 = new set<int>[NVERTICES];
-    for(int i=0;i<NVERTICES;i++){
-        vertices1[i] = set<int>(vertices[i]);
-    }
-    return vertices1;
-}
-
-
 
 bool *verticesAvailable;
+
+bool blockedOrSelected(int i,set<int> selected,set<int> blocked){
+    return (selected.find(i) != selected.end()) || (blocked.find(i) != blocked.end());
+}
 
 int main() {
     readFromInput("input.txt");
     makeEdgesFromBoard();
 
-    vertices = new set<int>[NVERTICES];
-    edgesToVertices(edges,vertices);
-
+//    vertices = new set<int>[NVERTICES];
+    vertices =edgesToVertices(edges);
 
 
     verticesAvailable = new bool[NVERTICES];
     for(int i=0;i<NVERTICES;i++)
         verticesAvailable[i] = true;
 
+    vector<set<int>> vertices1 =verticesCopy(vertices);
+    vector<bool> available;
+    for(int i=0;i<vertices1.size();i++){
+        available.push_back(true);
+    }
+
+    set<int> selected;
+    set<int> blocked;
+
+
+    //selectAlones
+    for(int i=0;i<vertices1.size();i++){
+        if(vertices1[i].empty()){
+            if(!blockedOrSelected(i,selected,blocked)){
+                selected.insert(i);
+            }
+        }
+    }
+
+    for(int i=0;i<vertices1.size();i++){
+        const bool isIn = selected.find(i) != selected.end();
+        if(blockedOrSelected(i,blocked,selected)) continue;
+
+        selected.insert(i);
+        handleVertexSelection();
+
+        deleteNeighbours(i,);
+        for(auto i: vertices1[i]){
+
+            blocked.insert(vertices1);
+        }
+
+        for(int i=0;i<vertices1.size();i++){
+            if()
+
+        }
+
+        
+
+//        selectAlones(vertices1,selected){
+//
+//        }
+
+
+    }
+
+
+//    vec.erase(std::remove(vec.begin(), vec.end(), 8), vec.end());
 
 
 
-//    copy(vertices->begin(), vertices->end(), vertices1);
+
 
 
 
@@ -261,11 +310,11 @@ int main() {
 
     showVertices(vertices);
 
-    vertices1[0].insert(99);
-    vertices1[32].insert(99);
+//    vertices1[0].insert(99);
+//    vertices1[32].insert(99);
 
 
-    showVertices(vertices1);
+//    showVertices(vertices1);
 
 
     showBoard(true);

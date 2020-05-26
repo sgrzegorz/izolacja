@@ -123,33 +123,6 @@ izolacja/fast:
 	$(MAKE) -f CMakeFiles/izolacja.dir/build.make CMakeFiles/izolacja.dir/build
 .PHONY : izolacja/fast
 
-dealocateVec.o: dealocateVec.cpp.o
-
-.PHONY : dealocateVec.o
-
-# target to build an object file
-dealocateVec.cpp.o:
-	$(MAKE) -f CMakeFiles/izolacja.dir/build.make CMakeFiles/izolacja.dir/dealocateVec.cpp.o
-.PHONY : dealocateVec.cpp.o
-
-dealocateVec.i: dealocateVec.cpp.i
-
-.PHONY : dealocateVec.i
-
-# target to preprocess a source file
-dealocateVec.cpp.i:
-	$(MAKE) -f CMakeFiles/izolacja.dir/build.make CMakeFiles/izolacja.dir/dealocateVec.cpp.i
-.PHONY : dealocateVec.cpp.i
-
-dealocateVec.s: dealocateVec.cpp.s
-
-.PHONY : dealocateVec.s
-
-# target to generate assembly for a file
-dealocateVec.cpp.s:
-	$(MAKE) -f CMakeFiles/izolacja.dir/build.make CMakeFiles/izolacja.dir/dealocateVec.cpp.s
-.PHONY : dealocateVec.cpp.s
-
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -186,9 +159,6 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... izolacja"
-	@echo "... dealocateVec.o"
-	@echo "... dealocateVec.i"
-	@echo "... dealocateVec.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
