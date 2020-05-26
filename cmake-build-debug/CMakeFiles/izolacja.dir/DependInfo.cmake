@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/x/Desktop/izolacja/dealocateVec.cpp" "/home/x/Desktop/izolacja/cmake-build-debug/CMakeFiles/izolacja.dir/dealocateVec.cpp.o"
   "/home/x/Desktop/izolacja/main.cpp" "/home/x/Desktop/izolacja/cmake-build-debug/CMakeFiles/izolacja.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

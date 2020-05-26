@@ -84,6 +84,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/x/Desktop/izolacja/dealocateVec.cpp">
+			<Option target="izolacja"/>
+		</Unit>
 		<Unit filename="/home/x/Desktop/izolacja/main.cpp">
 			<Option target="izolacja"/>
 		</Unit>

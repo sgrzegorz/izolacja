@@ -5,7 +5,8 @@
 #include <sstream>
 #include <set>
 #include <tuple>
-
+#include <algorithm>
+#include <vector>
 
 
 using namespace std;
@@ -48,6 +49,18 @@ struct Board{
 Board ** board;
 int W, H, L, K;
 int NVERTICES = 0;
+
+void showVertices(set<int> *vertices){
+    for(int v=0;v<NVERTICES;v++){
+        printf("\n%d ->",v);
+
+        for(auto i : vertices[v]){
+            cout<<i<<" ";
+        }
+
+    }
+    cout<<endl;
+}
 
 void showBoard(bool flag){
     for(int y=0;y<H;y++){
@@ -168,17 +181,91 @@ void makeEdgesFromBoard(){
 }
 
 
+void edgesToVertices(set<Edge> edges,set<int> *vertices){
+    for (auto edge : edges){
+        vertices[edge.x].insert(edge.y);
+        vertices[edge.y].insert(edge.x);
+    }
+}
+
+//void resolveAloneVertices(set<int> *vertices){
+//    int lenVertices = sizeof(vertices)/sizeof(set<int>);
+//    for (int i=0;i<lenVertices;i++){
+//        if(vertices[i]) continue;
+//
+//
+//
+//
+//    }
+//}
+
+
+vector<int> outputVertices;
+
+vector<int> bestVertices;
+int bestK =0;
+
+
+void VRalgorihm(){
+
+
+}
+
+set<int> * verticesCopy(set<int> *vertices){
+    set<int> *vertices1 = new set<int>[NVERTICES];
+    for(int i=0;i<NVERTICES;i++){
+        vertices1[i] = set<int>(vertices[i]);
+    }
+    return vertices1;
+}
+
+set<int> * verticesDelete(set<int> *vertices){
+
+    set<int> *vertices1 = new set<int>[NVERTICES];
+    for(int i=0;i<NVERTICES;i++){
+        vertices1[i] = set<int>(vertices[i]);
+    }
+    return vertices1;
+}
 
 
 
+bool *verticesAvailable;
 
 int main() {
     readFromInput("input.txt");
     makeEdgesFromBoard();
 
+    vertices = new set<int>[NVERTICES];
+    edgesToVertices(edges,vertices);
 
 
 
+    verticesAvailable = new bool[NVERTICES];
+    for(int i=0;i<NVERTICES;i++)
+        verticesAvailable[i] = true;
+
+
+
+
+//    copy(vertices->begin(), vertices->end(), vertices1);
+
+
+
+
+    cout<<"f";
+//    resolveAloneVertices();
+
+
+
+
+    showVertices(vertices);
+
+    vertices1[0].insert(99);
+    vertices1[32].insert(99);
+
+
+    showVertices(vertices1);
 
 
     showBoard(true);

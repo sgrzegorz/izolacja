@@ -1,1 +1,1 @@
-/usr/bin/c++  -g   CMakeFiles/izolacja.dir/main.cpp.o  -o izolacja 
+/usr/bin/c++  -g   CMakeFiles/izolacja.dir/main.cpp.o CMakeFiles/izolacja.dir/dealocateVec.cpp.o  -o izolacja 

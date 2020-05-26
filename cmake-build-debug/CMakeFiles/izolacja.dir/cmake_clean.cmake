@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/izolacja.dir/dealocateVec.cpp.o"
   "CMakeFiles/izolacja.dir/main.cpp.o"
   "izolacja"
   "izolacja.pdb"
