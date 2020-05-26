@@ -252,14 +252,15 @@ int getRandomVertex(vector<bool> available){
     int i = randomVertex+1;
     while(i!=randomVertex){
         i = i%available.size();
-        if(available[i]) return i;
+        if(available[i]) {
+            return i;
+        }
         i++;
     }
     cout<<"Shouldnt print this statement, no available vertex found";
     return -1;
 
 }
-
 
 set<int> VRalgorihmSolution(){
     int L1=L;
@@ -270,43 +271,30 @@ set<int> VRalgorihmSolution(){
     }
     set<int> selected;
 
-    // finsh solution
-    bool noAvailableVertex=true;
-    for(int i=0;i<vertices1.size();i++){
-        if(available[i]) noAvailableVertex=false;
-    }
-    if(noAvailableVertex) return selected;
+    while(true) {
+        // finsh solution
+        bool noAvailableVertex = true;
+        for (int i = 0; i < vertices1.size(); i++) {
+            if (available[i]) noAvailableVertex = false;
+        }
+        if (noAvailableVertex) return selected;
 
-    //selectAlones
-    for(int i=0;i<vertices1.size();i++){
-        if(vertices1[i].empty()){
-            if(available[i]){
-                available[i]=false;
+        //selectAlones
+        for (int i = 0; i < vertices1.size(); i++) {
+            if (vertices1[i].empty() && available[i]) {
+                available[i] = false;
                 selected.insert(i);
             }
         }
+
+        //add random vertex to selected
+        int i = getRandomVertex(available);
+
+        available[i] = false;
+        selected.insert(i);
+
+        handleVertexSelection(vertices1, available, i, L1);
     }
-
-    //add random vertex to selected
-
-    int i = getRandomVertex(available);
-
-    available[i]=false;
-    selected.insert(i);
-
-    handleVertexSelection(vertices1,available,i,L1);
-
-//    for(int i=0;i<vertices1.size();i++){ TODO mozna zrobic zeby wybiralo v o najmnijszym stopniu
-//        const bool isIn = selected.find(i) != selected.end();
-//        if(!available[i]) continue;
-//
-//        available[i]=false;
-//        selected.insert(i);
-//
-//        handleVertexSelection(vertices1,available,i,L1);
-//
-//    }
-
 }
 
 set<int>  VRalgorihm(){
@@ -319,13 +307,20 @@ set<int>  VRalgorihm(){
         if(pretenders.size() > bestK){
             bestK = pretenders.size();
             bestVertices = pretenders;
-            cout<<bestK;
+            cout<<bestK<<endl;
         }
 
     }
     return bestVertices;
 }
 
+void writeToOutput(string filename,set<int> bestVertices){
+    ifstream file(filename);
+    for(auto v: bestVertices){
+        file >>
+    }
+
+}
 
 
 //bool *verticesAvailable;
@@ -335,9 +330,15 @@ set<int>  VRalgorihm(){
 //}
 
 int main() {
+    srand(time(0));
+
     readFromInput("input.txt");
     makeEdgesFromBoard();
     vertices =edgesToVertices(edges);
+
+    showBoard(true);
+
+    showBoard(false);
 
     set<int>bestVertices = VRalgorihm();
     cout<<"";
@@ -364,7 +365,7 @@ int main() {
 
 
 
-    showVertices(vertices);
+//    showVertices(vertices);
 
 //    vertices1[0].insert(99);
 //    vertices1[32].insert(99);
@@ -373,9 +374,7 @@ int main() {
 //    showVertices(vertices1);
 
 
-    showBoard(true);
 
-    showBoard(false);
 
 
 
