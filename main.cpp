@@ -7,7 +7,7 @@
 #include <tuple>
 #include <algorithm>
 #include <vector>
-
+#include <random>
 
 using namespace std;
 
@@ -216,81 +216,137 @@ void verticesDelete(vector<set<int>> vertices){ //TODO: check
 }
 
 
-vector<int> outputVertices;
-
-vector<int> bestVertices;
-int bestK =0;
 
 
-void VRalgorihm(){
 
+
+void handleVertexSelection( vector<set<int>>&vertices1, vector<bool> &available,int i, int L){ //TODO check
+    if(L<=0) return;
+
+    set<int> neighbours(vertices1[i]);
+    for(auto neigh:neighbours){
+//        available[neigh]= false;
+    }
+
+    for(auto neigh: neighbours){
+        vertices1[i].erase(neigh);
+        vertices1[neigh].erase(i);
+    }
+
+    for(auto neigh:neighbours){
+        available[neigh]= false;
+        if(L>0) handleVertexSelection(vertices1,available,neigh,L-1);
+    }
+}
+//std::random_device rd; // obtain a random number from hardware
+//std::mt19937 eng(rd()); // seed the generator
+//std::uniform_int_distribution<> distr(0, ); // define the range
+
+
+int getRandomVertex(vector<bool> available){
+    int maximum_number = available.size()-1;
+    int minimum_number =0;
+    const int randomVertex = (rand() % (maximum_number + 1 - minimum_number)) + minimum_number;
+
+    if(available[randomVertex]) return randomVertex;
+    int i = randomVertex+1;
+    while(i!=randomVertex){
+        i = i%available.size();
+        if(available[i]) return i;
+        i++;
+    }
+    cout<<"Shouldnt print this statement, no available vertex found";
+    return -1;
 
 }
 
 
-bool *verticesAvailable;
-
-bool blockedOrSelected(int i,set<int> selected,set<int> blocked){
-    return (selected.find(i) != selected.end()) || (blocked.find(i) != blocked.end());
-}
-
-int main() {
-    readFromInput("input.txt");
-    makeEdgesFromBoard();
-
-//    vertices = new set<int>[NVERTICES];
-    vertices =edgesToVertices(edges);
-
-
-    verticesAvailable = new bool[NVERTICES];
-    for(int i=0;i<NVERTICES;i++)
-        verticesAvailable[i] = true;
-
+set<int> VRalgorihmSolution(){
+    int L1=L;
     vector<set<int>> vertices1 =verticesCopy(vertices);
     vector<bool> available;
     for(int i=0;i<vertices1.size();i++){
         available.push_back(true);
     }
-
     set<int> selected;
-    set<int> blocked;
 
+    // finsh solution
+    bool noAvailableVertex=true;
+    for(int i=0;i<vertices1.size();i++){
+        if(available[i]) noAvailableVertex=false;
+    }
+    if(noAvailableVertex) return selected;
 
     //selectAlones
     for(int i=0;i<vertices1.size();i++){
         if(vertices1[i].empty()){
-            if(!blockedOrSelected(i,selected,blocked)){
+            if(available[i]){
+                available[i]=false;
                 selected.insert(i);
             }
         }
     }
 
-    for(int i=0;i<vertices1.size();i++){
-        const bool isIn = selected.find(i) != selected.end();
-        if(blockedOrSelected(i,blocked,selected)) continue;
+    //add random vertex to selected
 
-        selected.insert(i);
-        handleVertexSelection();
+    int i = getRandomVertex(available);
 
-        deleteNeighbours(i,);
-        for(auto i: vertices1[i]){
+    available[i]=false;
+    selected.insert(i);
 
-            blocked.insert(vertices1);
-        }
+    handleVertexSelection(vertices1,available,i,L1);
 
-        for(int i=0;i<vertices1.size();i++){
-            if()
-
-        }
-
-        
-
-//        selectAlones(vertices1,selected){
+//    for(int i=0;i<vertices1.size();i++){ TODO mozna zrobic zeby wybiralo v o najmnijszym stopniu
+//        const bool isIn = selected.find(i) != selected.end();
+//        if(!available[i]) continue;
 //
-//        }
+//        available[i]=false;
+//        selected.insert(i);
+//
+//        handleVertexSelection(vertices1,available,i,L1);
+//
+//    }
 
+}
+
+set<int>  VRalgorihm(){
+
+    set<int> bestVertices;
+    int bestK=0;
+
+    while(bestK<K){
+        set<int> pretenders = VRalgorihmSolution();
+        if(pretenders.size() > bestK){
+            bestK = pretenders.size();
+            bestVertices = pretenders;
+            cout<<bestK;
+        }
 
     }
+    return bestVertices;
+}
+
+
+
+//bool *verticesAvailable;
+
+//bool blockedOrSelected(int i,set<int> selected,set<int> blocked){
+//    return (selected.find(i) != selected.end()) || (blocked.find(i) != blocked.end());
+//}
+
+int main() {
+    readFromInput("input.txt");
+    makeEdgesFromBoard();
+    vertices =edgesToVertices(edges);
+
+    set<int>bestVertices = VRalgorihm();
+    cout<<"";
+    ///////
+//    verticesAvailable = new bool[NVERTICES];
+//    for(int i=0;i<NVERTICES;i++)
+//        verticesAvailable[i] = true;
+
+
 
 
 //    vec.erase(std::remove(vec.begin(), vec.end(), 8), vec.end());
