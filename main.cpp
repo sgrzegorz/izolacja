@@ -11,35 +11,6 @@
 
 using namespace std;
 
-//class Vertex {
-//public:
-//    int x;
-//    int y;
-//
-//    Vertex(int x, int y) {
-//        this->x = x;
-//        this->y = y;
-//    }
-//
-//};
-//
-//class Graph {
-//public:
-//    list<Vertex> vertices;
-//
-//};
-
-//struct vertex {
-//    int x;
-//    int y;
-//    set<vertex> neighbours;
-//
-//};
-//
-//struct edge{
-//    vertex u;
-//    vertex v;
-//};
 
 struct Board{
     char symbol;
@@ -79,17 +50,20 @@ void showBoard(bool flag){
     }
     cout<<endl;
 }
-class Vertex {
+class VertexCoordinates {
 public:
-    Vertex(int x,int y){
+    VertexCoordinates(int x,int y){
         this->x =x;
         this->y =y;
     }
-    Vertex(){
+    VertexCoordinates(){
     }
     int x;
     int y;
 };
+
+vector<set<int>>vertices;
+vector<VertexCoordinates> vertexCoordinates;
 
 void readFromInput(string filename){
     string boardName;
@@ -111,7 +85,10 @@ void readFromInput(string filename){
             char symbol;
             file >> symbol;
             if(symbol!='.'){
+
                 board[x][y].vertexId=NVERTICES;
+                vertexCoordinates.push_back(VertexCoordinates(x,y));
+
                 NVERTICES++;
             }else{
                 board[x][y].vertexId=-1;
@@ -120,6 +97,7 @@ void readFromInput(string filename){
         }
     }
 }
+
 
 class Edge{
 public:
@@ -137,8 +115,6 @@ public:
 };
 
 
-vector<set<int>>vertices;
-Vertex *verticesXY;
 set<Edge> edges;
 
 
@@ -214,9 +190,6 @@ void verticesDelete(vector<set<int>> vertices){ //TODO: check
     vertices.clear();
     vector<set<int>>().swap(vertices);
 }
-
-
-
 
 
 
@@ -315,11 +288,11 @@ set<int>  VRalgorihm(){
 }
 
 void writeToOutput(string filename,set<int> bestVertices){
-    ifstream file(filename);
+    ofstream file(filename);
     for(auto v: bestVertices){
-        file >>
+        file << vertexCoordinates[v].x <<" "<< vertexCoordinates[v].y<<endl;
     }
-
+    file.close();
 }
 
 
@@ -341,6 +314,8 @@ int main() {
     showBoard(false);
 
     set<int>bestVertices = VRalgorihm();
+
+    writeToOutput("output.txt",bestVertices);
     cout<<"";
     ///////
 //    verticesAvailable = new bool[NVERTICES];

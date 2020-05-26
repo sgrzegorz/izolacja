@@ -1,1 +1,1 @@
- python3 judge.py board result
+ python3 judge.py input.txt output.txt
