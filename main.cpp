@@ -234,7 +234,7 @@ int getRandomVertex(vector<bool> available){
         }
         i++;
     }
-    cout<<"Shouldnt print this statement, no available vertex found";
+    cout<<"Shouldnt ever print this statement, no available vertex found";
     return -1;
 
 }
@@ -246,7 +246,7 @@ set<int> VRalgorihmCandidates(){
     for(int i=0;i<vertices1.size();i++){
         available.push_back(true);
     }
-    set<int> selected;
+    set<int> candidates;
 
     while(true) {
 
@@ -254,21 +254,21 @@ set<int> VRalgorihmCandidates(){
         for (int i = 0; i < vertices1.size(); i++) {
             if (available[i]) noAvailableVertex = false;
         }
-        if (noAvailableVertex) return selected;
+        if (noAvailableVertex) return candidates;
 
         //selectAlones
         for (int i = 0; i < vertices1.size(); i++) {
             if (vertices1[i].empty() && available[i]) {
                 available[i] = false;
-                selected.insert(i);
+                candidates.insert(i);
             }
         }
 
-        //add random vertex to selected
+        //add random vertex to candidates
         int i = getRandomVertex(available);
 
         available[i] = false;
-        selected.insert(i);
+        candidates.insert(i);
 
         handleVertexSelection(vertices1, available, i, L1);
     }
@@ -284,7 +284,7 @@ set<int>  VRalgorihm(){
         if(candidates.size() > bestK){
             bestK = candidates.size();
             bestVertices = candidates;
-            cout<<bestK<<endl;
+//            cout<<bestK<<endl;
         }
 
     }
@@ -301,14 +301,19 @@ int main() {
     makeEdgesFromBoard();
     vertices =edgesToVertices(edges);
 
-    showBoard(true);
+//    showBoard(true);
 
-    showBoard(false);
+//    showBoard(false);
 
     set<int>bestVertices = VRalgorihm();
 
-    writeToOutput("output.txt",bestVertices);
-    cout<<"";
+
+    for(auto v: bestVertices){
+        cout << vertexCoordinates[v].x <<" "<< vertexCoordinates[v].y<<endl;
+    }
+
+//    writeToOutput("output.txt",bestVertices);
+//    cout<<"";
 
 
     return 0;
