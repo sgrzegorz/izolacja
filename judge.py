@@ -36,10 +36,12 @@ def check_output_file(output, expected_population, board_width, board_height):
     for line in output:
         if len(line) != 2 or not line[0].isnumeric() or not line[1].isnumeric:
             exit_with(WRONG_OUTPUT, 'Each line of output file must contain exactly 2 numbers')
-        # for coord in line:
-        #     coord = int(coord)
-        #     if coord < 0 or coord > board_height:
-        #         exit_with(WRONG_OUTPUT, 'Coordinates (%s, %s) are outside the board' % tuple(line))
+        xx = int(line[0])
+        yy = int(line[1])
+        if xx < 0 or xx >= board_width:
+            exit_with(WRONG_OUTPUT, 'Coordinates (%s, %s) are outside the board' % tuple(line))
+        if yy < 0 or yy >= board_height:
+            exit_with(WRONG_OUTPUT, 'Coordinates (%s, %s) are outside the board' % tuple(line))
 
 def read_board(filename):
     with open(filename) as board_file:

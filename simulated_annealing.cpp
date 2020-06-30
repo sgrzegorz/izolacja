@@ -293,7 +293,6 @@ set<int> VRalgorihmCandidates(){
                 candidates.insert(i);
             }
         }
-
         //add random vertex to candidates
         int i = getRandomVertex(available);
 
@@ -302,6 +301,11 @@ set<int> VRalgorihmCandidates(){
 
         handleVertexSelection(vertices1, available, i, L1);
     }
+}
+
+set <int> simulated_annealing(){
+
+
 }
 
 set<int>  VRalgorihm(){
