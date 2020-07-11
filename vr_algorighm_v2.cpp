@@ -117,7 +117,11 @@ void readFromInput(string filename){
     file.close();
 }
 
-
+void writeToCout(set<int>bestVertices){
+    for(auto v: bestVertices){
+        cout << vertexCoordinates[v].x <<" "<< vertexCoordinates[v].y<<endl;
+    }
+}
 
 bool isInsideTheBoard(int x,int y,int W,int H){
     return (x>=0 && x<W && y>=0 && y<H);
@@ -306,7 +310,6 @@ void showBoard(set<int>bestVertices){
                     printf("%2d ", _board[x][y].vertexId);
                 }
 
-//                }
             }
         }
         cout<<endl;
@@ -323,14 +326,23 @@ void handleVertexSelection( vector<set<int>>&vertices1, vector<bool> &available,
 
     set<int> neighbours(vertices1[i]);
 
-    for(auto neigh: neighbours){
-        vertices1[i].erase(neigh);
-        vertices1[neigh].erase(i);
-    }
-
     for(auto neigh:neighbours){
         available[neigh]= false;
         if(L>0) handleVertexSelection(vertices1,available,neigh,L-1);
+    }
+}
+
+
+bool noCandidatesInNeighbourhood( vector<set<int>>&vertices1, vector<bool> &available,set<int> &candidates,int i, int L){ 
+    if(L<=0) return true;
+
+    set<int> neighbours(vertices1[i]);
+
+    for(auto neigh:neighbours){
+        if(candidates.find(neigh) != candidates.end()){
+            return false;
+        }
+        return noCandidatesInNeighbourhood(vertices1,available,candidates,neigh,L-1);
     }
 }
 
@@ -349,9 +361,20 @@ int getRandomVertex(vector<bool> available){
         }
         i++;
     }
-    cout<<"Shouldnt ever print this statement, no available vertex found";
+
+
+    cout<<"Shouldnt ever print this statement, no available vertex found"<<endl;
     return -1;
 
+}
+
+bool noAvailableVertices(vector<set<int>> vertices1,vector<bool> available){
+    //if no available return candidates
+    bool noAvailableVertex = true;
+    for (int i = 0; i < vertices1.size(); i++) {
+        if (available[i]) noAvailableVertex = false;
+    }
+    return noAvailableVertex;
 }
 
 set<int> VRalgorihmCandidates(){
@@ -365,22 +388,28 @@ set<int> VRalgorihmCandidates(){
 
     while(true) {
 
-        bool noAvailableVertex = true;
-        for (int i = 0; i < vertices1.size(); i++) {
-            if (available[i]) noAvailableVertex = false;
-        }
-        if (noAvailableVertex) return candidates;
+        if (noAvailableVertices(vertices1,available)) return candidates;
 
         //selectAlones
         for (int i = 0; i < vertices1.size(); i++) {
-            if (vertices1[i].empty() && available[i]) {
-                available[i] = false;
-                candidates.insert(i);
+            if(available[i]){
+                bool lonely=true;
+                for(auto neigh : vertices1[i]){
+                    if(available[neigh]) lonely =false;
+                }
+                if (lonely) {
+                    available[i] = false;
+                    candidates.insert(i);
+                    handleVertexSelection(vertices1, available, i, L1);
+
+                }
             }
         }
+
+        if (noAvailableVertices(vertices1,available)) return candidates;
+
         //add random vertex to candidates
         int i = getRandomVertex(available);
-
         available[i] = false;
         candidates.insert(i);
 
@@ -388,15 +417,12 @@ set<int> VRalgorihmCandidates(){
     }
 }
 
-set <int> simulated_annealing(){
-
-
-}
 
 set<int>  VRalgorihm(){
 
     set<int> bestVertices;
     int bestK=0;
+
 
     while(bestK<K){
         set<int> candidates = VRalgorihmCandidates();
@@ -416,31 +442,23 @@ set<int>  VRalgorihm(){
 int main() {
     srand(time(0));
 
-    readFromInput("/home/x/DEVELOPER1/WORK/CLionProjects/izolacja/input.txt");
-//    readFromCin();
+//    readFromInput("/home/x/DEVELOPER1/WORK/CLionProjects/izolacja/input.txt");
+    readFromCin();
     makeEdgesFromBoard();
     vertices =edgesToVertices(edges);
-
-    showBoard(true);
-
-    showBoard(false);
-
-
     set<int>bestVertices = VRalgorihm();
 
 
 
-    for(auto v: bestVertices){
-        cout << v<<", ";
-    }
-    showBoard(bestVertices);
 
 
-//    for(auto v: bestVertices){
-//        cout << vertexCoordinates[v].x <<" "<< vertexCoordinates[v].y<<endl;
-//    }
 
-    writeToOutput("output.txt",bestVertices);
+//    showBoard(bestVertices);
+
+
+
+    writeToCout(bestVertices);
+ //   writeToOutput("output.txt",bestVertices);
 //    cout<<"";
 
 
