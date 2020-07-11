@@ -119,12 +119,12 @@ void readFromInput(string filename){
 
 
 
-bool isInsideTheBoard(int x,int y){
+bool isInsideTheBoard(int x,int y,int W,int H){
     return (x>=0 && x<W && y>=0 && y<H);
 }
 
 void resolveNewEdge(int x,int y,char symbol1,char symbol2, int vertexId){
-    if(isInsideTheBoard(x,y)){
+    if(isInsideTheBoard(x,y,W,H)){
         Board other = board[x][y];
         if(other.symbol==symbol1 || other.symbol==symbol2) edges.insert(Edge(vertexId,other.vertexId));
     }
@@ -230,6 +230,80 @@ void showBoard(bool flag){
     cout<<endl;
 }
 
+//--------------------------------------------------------------------------------------
+
+int transform(int x){
+    return x*2;
+}
+
+void addSign(Board **board,Board **_board,int x,int y,int neigh_x, int neigh_y, char sign,int _W, int _H){
+
+    if( isInsideTheBoard(neigh_x,neigh_y,W,H) &&isInsideTheBoard(transform(neigh_x),transform(neigh_y),_W,_H)){
+        int current = board[x][y].vertexId;
+        int neigh = board[neigh_x][neigh_y].vertexId;
+        if(vertices[current].find(neigh) != vertices[current].end()){ //is neighbour
+            int tx = (int) (transform(neigh_x)+transform(x))/2;
+            int ty = (int) (transform(neigh_y)+transform(y))/2;
+            _board[tx][ty] = {sign, -2};
+        }else{
+            int tx = (int) (transform(neigh_x)+transform(x))/2;
+            int ty = (int) (transform(neigh_y)+transform(y))/2;
+            _board[tx][ty] = {' ',-2};
+
+        }
+    }
+}
+
+void showBoard(){
+    int _W = transform(W);
+    int _H = transform(H);
+
+    Board** _board  = new Board*[_W];
+    for(int i = 0; i < _W; ++i)
+        _board[i] = new Board[_H];
+
+    for(int y=0;y<_H;y++) {
+        for (int x = 0; x < _W; x++) {
+            _board[x][y] = {' ',-2};
+        }
+    }
+
+    for(int y=0;y<H;y++) {
+        for (int x = 0; x < W; x++) {
+            _board[transform(x)][transform(y)] = board[x][y];
+        }
+    }
+
+
+
+    for(int y=0;y<H;y++) {
+        for (int x = 0; x < W; x++) {
+
+            addSign(board,_board,x,y,x-1,y,'-',_W,_H);
+            addSign(board,_board,x,y,x+1,y,'-',_W,_H);
+            addSign(board,_board,x,y,x,y-1,'|',_W,_H);
+            addSign(board,_board,x,y,x,y+1,'|',_W,_H);
+
+        }
+    }
+
+    for(int y=0;y<_H;y++){
+        for(int x=0;x<_W;x++){
+            if(_board[x][y].vertexId==-1){
+                printf("   ");
+            }else if(_board[x][y].vertexId==-2){
+                printf(" %c ", _board[x][y].symbol);
+            }else{
+                printf("%2d ", _board[x][y].vertexId);
+
+            }
+        }
+        cout<<endl;
+    }
+    cout<<endl;
+}
+
+
 
 /////////////////////VRalgorithm////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -331,7 +405,7 @@ set<int>  VRalgorihm(){
 int main() {
     srand(time(0));
 
-    readFromInput("input.txt");
+    readFromInput("/home/x/DEVELOPER1/WORK/CLionProjects/izolacja/input.txt");
 //    readFromCin();
     makeEdgesFromBoard();
     vertices =edgesToVertices(edges);
@@ -339,6 +413,8 @@ int main() {
     showBoard(true);
 
     showBoard(false);
+
+    showBoard();
 
     set<int>bestVertices = VRalgorihm();
 
