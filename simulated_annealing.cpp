@@ -254,7 +254,9 @@ void addSign(Board **board,Board **_board,int x,int y,int neigh_x, int neigh_y, 
     }
 }
 
-void showBoard(){
+
+void showBoard(set<int>bestVertices){
+
     int _W = transform(W);
     int _H = transform(H);
 
@@ -287,6 +289,7 @@ void showBoard(){
         }
     }
 
+    cout<<endl;
     for(int y=0;y<_H;y++){
         for(int x=0;x<_W;x++){
             if(_board[x][y].vertexId==-1){
@@ -294,8 +297,16 @@ void showBoard(){
             }else if(_board[x][y].vertexId==-2){
                 printf(" %c ", _board[x][y].symbol);
             }else{
-                printf("%2d ", _board[x][y].vertexId);
+//                if(bestVertices==NULL){
+//                    printf("%2d ", _board[x][y].vertexId);
+//                }else{
+                if(bestVertices.find(_board[x][y].vertexId) != bestVertices.end()){
+                    printf("\033[1;31m%2d \033[0m", _board[x][y].vertexId);
+                }else{
+                    printf("%2d ", _board[x][y].vertexId);
+                }
 
+//                }
             }
         }
         cout<<endl;
@@ -414,17 +425,20 @@ int main() {
 
     showBoard(false);
 
-    showBoard();
 
     set<int>bestVertices = VRalgorihm();
+
+
+
+    for(auto v: bestVertices){
+        cout << v<<", ";
+    }
+    showBoard(bestVertices);
 
 
 //    for(auto v: bestVertices){
 //        cout << vertexCoordinates[v].x <<" "<< vertexCoordinates[v].y<<endl;
 //    }
-
-
-
 
     writeToOutput("output.txt",bestVertices);
 //    cout<<"";
