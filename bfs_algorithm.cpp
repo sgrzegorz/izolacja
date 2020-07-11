@@ -425,6 +425,7 @@ set<int> VRalgorihmCandidates(){
 }
 
 
+
 int bfs(int start,vector<int> &candidates,vector<bool> &available,vector<vector<int>> &Distances){
 
 // bsf
@@ -444,13 +445,13 @@ int bfs(int start,vector<int> &candidates,vector<bool> &available,vector<vector<
     while(!FIFO.empty()){
         int u = FIFO.front(); FIFO.pop_front();
         for(auto neigh : vertices[u]){
-            if(available[neigh]){//w przeciwnym razie nie ma o czym gadac...
+           // if(available[neigh]){//w przeciwnym razie nie ma o czym gadac...
                 if(colours[neigh] == WHITE){
                     colours[neigh] = GREY;
                     distances[neigh] = distances[u]+1;
                     FIFO.push_back(neigh);
                 }
-            }
+         //   }
         }
         colours[u] =BLACK;
     }
@@ -460,39 +461,67 @@ int bfs(int start,vector<int> &candidates,vector<bool> &available,vector<vector<
     //set as unavailable
     int next_start=-1;
     for(int i=0;i<distances.size();i++){
-        if(distances[i]<L){
+        if(distances[i]<L+1){ //be carful trzeba przeskalowac L tak zeby odleglosc jak sa obok siebie wynosila 1 a nie 0
             available[i]=false;
         }
     }
 
     set<int> aureola;
     for(int i=0;i<distances.size();i++){
-        if(distances[i]==L){
-            aureola.insert(i)
-            next_start = i;
+        if(available[i] &&distances[i]==L+1){ //be carful trzeba przeskalowac L
+            aureola.insert(i);
         }
     }
-//    return next_start; //jesli zwroci -1 to ten podgraf jest skonczony wpp musi zwrocic poprawny wierzcholek. Jesli L=5 jakis wierzcholek jest w odlegloci 6 to musi byc jakis w odleglosci 5
-    return aureola;
+
+    for(auto i : aureola){
+        if(available[i]) bfs(i,candidates,available,Distances);
+    }
 }
 
 
-set<int>  BFSalgorihm(){
+vector<int> bfs_full(){
+    vector<bool> available;
+    vector<int> candidates;
+    vector<vector<int>> Distances;
+    for(int i=0;i<vertices.size();i++){
+        available.push_back(true);
+    }
 
-    set<int> bestVertices;
+    int next_start =0;
+
+    //do for all subgrapghs
+
+    bool done = false;
+    while(!done){ //do bfs for all subgraphs
+        done=true;
+        int start=-INFTY;
+        for(int i=0;i<vertices.size();i++) {
+            if(available[i]){
+                done=false;
+                start=i;
+            }
+        }
+        if(done) break;
+        bfs(start,candidates,available,Distances); //bfs for one subgraph
+    }
+
+    return candidates;
+}
+
+vector<int>  BFSalgorihm(){
+
+    vector<int> bestCandidates;
     int bestK=0;
 
 
     while(bestK<K){
-        set<int> candidates = VRalgorihmCandidates();
+        vector<int> candidates = bfs_full();
         if(candidates.size() > bestK){
             bestK = candidates.size();
-            bestVertices = candidates;
-//            cout<<bestK<<endl;
+            bestCandidates = candidates;
         }
-
     }
-    return bestVertices;
+    return bestCandidates;
 }
 
 
@@ -506,29 +535,8 @@ int main() {
     makeEdgesFromBoard();
     vertices =edgesToVertices(edges);
 
-    vector<bool> available;
-    vector<int> candidates;
-    vector<vector<int>> Distances;
-    for(int i=0;i<vertices.size();i++){
-        available.push_back(true);
-    }
 
-    int next_start =0;
-
-    //do for all subgrapghs
-//    while(find(available.begin(), available.end(), true) != available.end()) { // while is at least one available vertex
-
-        //do bfs for one subgraph
-        while(next_start!=-1){
-            next_start = bfs(next_start,candidates,available,Distances);
-
-            for(int i=0;i<candidates.size();i++){
-                Distances[i][next_start]
-            }
-        }
-
-//    }
-
+    vector<int> candidates = BFSalgorihm();
 
     set<int> _candidates(candidates.begin(), candidates.end());
     showBoard(_candidates);
