@@ -366,7 +366,7 @@ void bfs(int start,vector<set<int>>&new_graph){
     }
 }
 
-void removeVertex(vector<set<int>>& new_graph,int element,vector<int>&available){
+void removeVertex(vector<set<int>>& new_graph,int element,vector<bool>&available){
     if(not available[element]) cout<<"Removing already removed vertex"<<endl;
 
     for(int i=0;i<NVERTICES;i++){
@@ -380,7 +380,7 @@ void removeVertex(vector<set<int>>& new_graph,int element,vector<int>&available)
 }
 
 
-bool isGraphEmpty(vector<int> available){
+bool isGraphEmpty(vector<bool> available){
     for(int i=0;i<NVERTICES;i++){
         if(available[i]){
             return false;
@@ -389,7 +389,17 @@ bool isGraphEmpty(vector<int> available){
     return true;
 }
 
-int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<int>available){
+int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<bool>available){
+    for(int i=0;i<NVERTICES;i++){
+        if(available[i] && new_graph[i].size()==1) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+int getVertexWithDegreeOne(vector<set<int>> new_graph, vector<bool>available){
     for(int i=0;i<NVERTICES;i++){
         if(available[i] && new_graph[i].empty()) {
             return i;
@@ -398,7 +408,7 @@ int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<int>available){
     return -1;
 }
 
-int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<int>available){
+int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<bool>available){
     int min=INFTY;
     int vertex =-56;
     for(int i=0;i<NVERTICES;i++){
@@ -412,45 +422,79 @@ int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<int>available){
     return vertex;
 }
 
-void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<int> &available){
+void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool> &available){
 
     if(isGraphEmpty(available)){
+        cout<<"!"<<endl;
         return;
     }
 
-    int vertexWithDegreeZero = getVertexWithDegreeZero(new_graph,available);
-    if(vertexWithDegreeZero!=-1){
-        iset.push_back(vertexWithDegreeZero);
-        removeVertex(new_graph,vertexWithDegreeZero,available);
-        independent_set(new_graph,iset,available);
 
+
+    //handle zero degree vertices
+    int vertex = getVertexWithDegreeZero(new_graph,available);
+    if(vertex!=-1){
+        iset.push_back(vertex);
+        removeVertex(new_graph,vertex,available);
+
+//        if(isGraphEmpty(available)){
+//            cout<<"!"<<endl;
+//            return;
+//        }
+        independent_set(new_graph,iset,available);
+        return;
+    }
+
+    //handle one degree vertices
+    vertex = getVertexWithDegreeOne(new_graph,available);
+    if(vertex!=-1){
+        set<int> neighbours(new_graph[vertex]);
+        for(auto neigh : neighbours){
+            removeVertex(new_graph,neigh,available);
+        }
+        removeVertex(new_graph,vertex,available);
+        iset.push_back(vertex);
+
+
+//        if(isGraphEmpty(available)){
+//            cout<<"!"<<endl;
+//            return;
+//        }
+        independent_set(new_graph,iset,available);
+        return;
+    }
+
+    int vertexWithMinimumDegree = getVertexWithMinimumDegree(new_graph,available);
+
+    //Assume vertexWithMinimumDegree is in the MIS –
+    //remove vertexWithMinimumDegree and its neighbors, since the
+    //neighbors can no longer be in the MIS.
+    vector<set<int>>new_graph1 = verticesCopy(new_graph); vector<bool> available1(available);
+    set<int> neighbours(new_graph[vertexWithMinimumDegree]);
+    for(auto neigh : neighbours){
+        removeVertex(new_graph1,neigh,available1);
+    }
+    removeVertex(new_graph1,vertexWithMinimumDegree,available1);
+
+    vector<int> iset1(iset);
+    iset1.push_back(vertexWithMinimumDegree);
+    independent_set(new_graph1,iset1,available1);
+
+    //Assume vertexWithMinimumDegree not in the MIS just remove vertexWithMinimumDegree
+    vector<set<int>>new_graph2 = verticesCopy(new_graph); vector<bool> available2(available);
+    removeVertex(new_graph2,vertexWithMinimumDegree,available2);
+    vector<int> iset2(iset);
+    independent_set(new_graph2,iset2,available2);
+
+
+    if(iset1.size() > iset2.size()){
+        new_graph = new_graph1;
+        iset = iset1;
+        available = available1;
     }else{
-//        int vertexWithMinimumDegree = getVertexWithMinimumDegree(new_graph,available);
-//
-//        vector<set<int>>new_graph1 = verticesCopy(new_graph); vector<int> available1(available);
-//        for(auto neigh : new_graph[vertexWithMinimumDegree]){
-//            removeVertex(new_graph1,neigh,available1);
-//        }
-//        removeVertex(new_graph1,vertexWithMinimumDegree,available1);
-//
-//        vector<int> iset1(iset);
-//        independent_set(new_graph1,iset1,available1);
-//
-//        vector<set<int>>new_graph2 = verticesCopy(new_graph); vector<int> available2(available);
-//        removeVertex(new_graph2,vertexWithMinimumDegree,available2);
-//        vector<int> iset2(iset);
-//        independent_set(new_graph2,iset2,available2);
-//
-//        if(iset1.size() > iset2.size()){
-//            new_graph = new_graph1;
-//            iset = iset1;
-//            available = available1;
-//        }else{
-//            new_graph = new_graph2;
-//            available = available2;
-//            iset = iset2;
-//        }
-    cout<<"!!!"<<endl;
+        new_graph = new_graph2;
+        iset = iset2;
+        available = available2;
     }
 
 
@@ -476,7 +520,7 @@ int main() {
         bfs(i,new_graph);
     }
 
-    vector<int> available;
+    vector<bool> available;
     for(int i=0;i<NVERTICES;i++){
         available.push_back(true);
     }
