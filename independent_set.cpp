@@ -391,19 +391,9 @@ bool isGraphEmpty(vector<bool> available){
     return true;
 }
 
-int getVertexWithDegreeOne(vector<set<int>> new_graph, vector<bool>available){
+int getVertexWithDegree(vector<set<int>> new_graph, vector<bool>available,int degree){
     for(int i=0;i<NVERTICES;i++){
-        if(available[i] && new_graph[i].size()==1) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-
-int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<bool>available){
-    for(int i=0;i<NVERTICES;i++){
-        if(available[i] && new_graph[i].empty()) {
+        if(available[i] && new_graph[i].size()==degree) {
             return i;
         }
     }
@@ -436,21 +426,17 @@ void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool>
 
 
     //handle zero degree vertices
-    int vertex = getVertexWithDegreeZero(new_graph,available);
+    int vertex = getVertexWithDegree(new_graph,available,0);
     if(vertex!=-1){
         iset.push_back(vertex);
         removeVertex(new_graph,vertex,available);
 
-//        if(isGraphEmpty(available)){
-//            cout<<"!"<<endl;
-//            return;
-//        }
         independent_set(new_graph,iset,available);
         return;
     }
 
     //handle one degree vertices
-    vertex = getVertexWithDegreeOne(new_graph,available);
+    vertex = getVertexWithDegree(new_graph,available,1);
     if(vertex!=-1){
         set<int> neighbours(new_graph[vertex]);
         for(auto neigh : neighbours){
@@ -459,14 +445,41 @@ void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool>
         removeVertex(new_graph,vertex,available);
         iset.push_back(vertex);
 
-
-//        if(isGraphEmpty(available)){
-//            cout<<"!"<<endl;
-//            return;
-//        }
         independent_set(new_graph,iset,available);
         return;
     }
+
+    //handle two degree vertices
+    vertex = getVertexWithDegree(new_graph,available,2);
+    if(vertex!=-1){
+        vector<int> neighbours(new_graph[vertex].begin(),new_graph[vertex].end());
+        int u = neighbours[0];
+        int w = neighbours[1];
+
+        if(new_graph[w].find(u) != new_graph[w].end()){ //jest krawedz miedzy u i w
+            removeVertex(new_graph,u,available);
+            removeVertex(new_graph,w,available);
+            removeVertex(new_graph,vertex,available);
+            iset.push_back(vertex);
+            independent_set(new_graph,iset,available);
+            return;
+        }else{
+//            int z=100;
+//            vector<set<int>>new_graph3 = verticesCopy(new_graph); vector<bool> available3(available);
+//
+//
+//
+//            for()
+//
+//            removeVertex(new_graph,vertex,available);
+//            iset.push_back(vertex);
+//
+//            independent_set(new_graph,iset,available);
+//            return;
+        }
+    }
+
+
 
     int vertexWithMinimumDegree = getVertexWithMinimumDegree(new_graph,available);
 
@@ -510,8 +523,8 @@ void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool>
 int main() {
     srand(time(0));
 
-    readFromInput("/home/x/DEVELOPER1/WORK/CLionProjects/izolacja/input.txt");
-//    readFromCin();
+//    readFromInput("/home/x/DEVELOPER1/WORK/CLionProjects/izolacja/input.txt");
+    readFromCin();
     makeEdgesFromBoard();
     vertices =edgesToVertices(edges);
 
@@ -543,11 +556,11 @@ int main() {
 
 
     set<int> _candidates(safePlaces.begin(), safePlaces.end());
-    showBoard(_candidates);
+//    showBoard(_candidates);
 
 
 
-//    writeToCout(_candidates);
+    writeToCout(_candidates);
 //    writeToOutput("output.txt",bestVertices);
 //    cout<<"";
 
