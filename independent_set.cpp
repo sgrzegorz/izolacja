@@ -350,11 +350,11 @@ void bfs(int start,vector<set<int>>&new_graph){
     while(!FIFO.empty()){
         int u = FIFO.front(); FIFO.pop_front();
         for(auto neigh : vertices[u]){
-                if(colours[neigh] == WHITE){
-                    colours[neigh] = GREY;
-                    distances[neigh] = distances[u]+1;
-                    FIFO.push_back(neigh);
-                }
+            if(colours[neigh] == WHITE){
+                colours[neigh] = GREY;
+                distances[neigh] = distances[u]+1;
+                FIFO.push_back(neigh);
+            }
 
         }
         colours[u] =BLACK;
@@ -371,7 +371,7 @@ void bfs(int start,vector<set<int>>&new_graph){
 void removeVertex(vector<set<int>>& new_graph,int element,vector<bool>&available){
     if(not available[element]) cout<<"Removing already removed vertex"<<endl;
 
-    for(int i=0;i<NVERTICES;i++){
+    for(int i=0;i<new_graph.size();i++){
         if(available[i] && (new_graph[i].find(element) != new_graph[i].end())){
             new_graph[i].erase(element);
         }
@@ -383,7 +383,7 @@ void removeVertex(vector<set<int>>& new_graph,int element,vector<bool>&available
 
 
 bool isGraphEmpty(vector<bool> available){
-    for(int i=0;i<NVERTICES;i++){
+    for(int i=0;i<available.size();i++){
         if(available[i]){
             return false;
         }
@@ -392,7 +392,7 @@ bool isGraphEmpty(vector<bool> available){
 }
 
 int getVertexWithDegree(vector<set<int>> new_graph, vector<bool>available,int degree){
-    for(int i=0;i<NVERTICES;i++){
+    for(int i=0;i<new_graph.size();i++){
         if(available[i] && new_graph[i].size()==degree) {
             return i;
         }
@@ -403,7 +403,7 @@ int getVertexWithDegree(vector<set<int>> new_graph, vector<bool>available,int de
 int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<bool>available){
     int min=INFTY;
     int vertex =-56;
-    for(int i=0;i<NVERTICES;i++){
+    for(int i=0;i<new_graph.size();i++){
         if(available[i] && not new_graph[i].empty()){
             if(new_graph[i].size() < min){
                 min = new_graph[i].size();
@@ -416,8 +416,16 @@ int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<bool>available)
     }
     return vertex;
 }
+int z=900;
+
+bool FLAG = false;
 
 void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool> &available){
+    if(K<=iset.size()) FLAG=true;
+
+    if(FLAG){
+        return;
+    }
 
     if(isGraphEmpty(available)){
         return;
@@ -452,9 +460,9 @@ void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool>
     //handle two degree vertices
     vertex = getVertexWithDegree(new_graph,available,2);
     if(vertex!=-1){
-        vector<int> neighbours(new_graph[vertex].begin(),new_graph[vertex].end());
-        int u = neighbours[0];
-        int w = neighbours[1];
+        vector<int> neighb(new_graph[vertex].begin(),new_graph[vertex].end());
+        int u = neighb[0];
+        int w = neighb[1];
 
         if(new_graph[w].find(u) != new_graph[w].end()){ //jest krawedz miedzy u i w
             removeVertex(new_graph,u,available);
@@ -464,22 +472,45 @@ void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool>
             independent_set(new_graph,iset,available);
             return;
         }else{
-//            int z=100;
+//            int z=z;
 //            vector<set<int>>new_graph3 = verticesCopy(new_graph); vector<bool> available3(available);
 //
+//            set<int> neighbours(new_graph[w]);
+//            neighbours.erase(vertex);
 //
+//            new_graph.push_back(set<int>());
+//            int z = new_graph.size()-1;
+//            for(auto neigh : neighbours){
+//                new_graph3[neigh].insert(z)
+//                new_graph3[z].insert(neigh)
 //
-//            for()
+//            }
+//            set<int> neighbours(new_graph[u]);
+//            neighbours.erase(vertex);
 //
+//            new_graph.push_back(set<int>());
+//            int z = new_graph.size()-1;
+//            for(auto neigh : neighbours){
+//                new_graph3[neigh].insert(z)
+//                new_graph3[z].insert(neigh)
+//
+//            }
+//
+//            set<int> neighbours(new_graph[vertex]);
+//            for(auto neigh : neighbours){
+//                removeVertex(new_graph,neigh,available);
+//            }
 //            removeVertex(new_graph,vertex,available);
 //            iset.push_back(vertex);
 //
-//            independent_set(new_graph,iset,available);
+//
+////            removeVertex(new_graph,vertex,available);
+////            iset.push_back(vertex);
+//
+//            independent_set(new_graph3,iset3,available3);
 //            return;
         }
     }
-
-
 
     int vertexWithMinimumDegree = getVertexWithMinimumDegree(new_graph,available);
 
