@@ -426,7 +426,47 @@ set<int> VRalgorihmCandidates(){
 
 
 
-int bfs(int start,vector<int> &candidates,vector<bool> &available,vector<vector<int>> &Distances){
+int lowestDegreeRoot(vector<bool> available,vector<set<int>>vertices){
+    vector<int> availableNeighbours;
+
+
+
+
+    for(int i=0;i<vertices.size();i++){
+        int number = 0;
+        for(auto neigh : vertices[i]){
+            if(available[neigh]) number++;
+        }
+        availableNeighbours.push_back(number);
+    }
+
+//    int min=INFTY;
+//    int vertex =-1;
+//    for(int i=0;i<vertices.size();i++){ //TODO better select random with the same degree
+//        if(available[i] && availableNeighbours[i]<min){
+//            vertex = i;
+//            min = availableNeighbours[i];
+//        }
+//    }
+
+    int min=INFTY;
+//    int vertex =-1;
+    for(int i=0;i<vertices.size();i++){ //TODO better select random with the same degree
+        if(available[i] && availableNeighbours[i]<min){
+//            vertex = i;
+            min = availableNeighbours[i];
+        }
+    }
+    set<int> chosenOnes;
+    for(int i=0;i<vertices.size();i++){ //TODO better select random with the same degree
+        if(available[i] && availableNeighbours[i]==min) chosenOnes.insert(i);
+    }
+
+  return *min_element(chosenOnes.begin(), chosenOnes.end());
+//    return vertex;
+}
+
+void bfs(int start,vector<int> &candidates,vector<bool> &available){
 
 // bsf
     vector<int> distances;
@@ -457,7 +497,7 @@ int bfs(int start,vector<int> &candidates,vector<bool> &available,vector<vector<
     }
 
     candidates.push_back(start);
-    Distances.push_back(distances);
+//    Distances.push_back(distances);
     //set as unavailable
     int next_start=-1;
     for(int i=0;i<distances.size();i++){
@@ -466,16 +506,18 @@ int bfs(int start,vector<int> &candidates,vector<bool> &available,vector<vector<
         }
     }
 
-    set<int> aureola;
-    for(int i=0;i<distances.size();i++){
-        if(available[i] &&distances[i]==L+1){ //be carful trzeba przeskalowac L
-            aureola.insert(i);
-        }
-    }
+//    set<int> aureola;
+//    for(int i=0;i<distances.size();i++){
+//        if(available[i] &&distances[i]==L+1){ //be carful trzeba przeskalowac L
+//            aureola.insert(i);
+//        }
+//    }
 
-    for(auto i : aureola){
-        if(available[i]) bfs(i,candidates,available,Distances);
-    }
+//    for(auto i : aureola){
+    if(noAvailableVertices(vertices,available)) return;
+
+    bfs(lowestDegreeRoot(available,vertices),candidates,available);
+//    }
 }
 
 int randomSubtreeRoot(vector<bool> available){
@@ -490,7 +532,7 @@ int randomSubtreeRoot(vector<bool> available){
 vector<int> bfs_full(){
     vector<bool> available;
     vector<int> candidates;
-    vector<vector<int>> Distances;
+//    vector<vector<int>> Distances;
     for(int i=0;i<vertices.size();i++){
         available.push_back(true);
     }
@@ -508,7 +550,7 @@ vector<int> bfs_full(){
             }
         }
         if(done) break;
-        bfs(randomSubtreeRoot(available),candidates,available,Distances); //bfs for one subgraph
+        bfs(randomSubtreeRoot(available),candidates,available); //bfs for one subgraph
     }
 
     return candidates;
