@@ -478,6 +478,14 @@ int bfs(int start,vector<int> &candidates,vector<bool> &available,vector<vector<
     }
 }
 
+int randomSubtreeRoot(vector<bool> available){
+    vector<int> theChosenOnes;
+    for(int i=0;i<available.size();i++){
+        if(available[i]) theChosenOnes.push_back(i);
+    }
+    int randomIndex = rand() % theChosenOnes.size();
+    return theChosenOnes[randomIndex];
+}
 
 vector<int> bfs_full(){
     vector<bool> available;
@@ -494,15 +502,13 @@ vector<int> bfs_full(){
     bool done = false;
     while(!done){ //do bfs for all subgraphs
         done=true;
-        int start=-INFTY;
         for(int i=0;i<vertices.size();i++) {
             if(available[i]){
                 done=false;
-                start=i;
             }
         }
         if(done) break;
-        bfs(start,candidates,available,Distances); //bfs for one subgraph
+        bfs(randomSubtreeRoot(available),candidates,available,Distances); //bfs for one subgraph
     }
 
     return candidates;
@@ -530,8 +536,8 @@ vector<int>  BFSalgorihm(){
 int main() {
     srand(time(0));
 
-    readFromInput("/home/x/DEVELOPER1/WORK/CLionProjects/izolacja/input.txt");
-//    readFromCin();
+//    readFromInput("/home/x/DEVELOPER1/WORK/CLionProjects/izolacja/input.txt");
+    readFromCin();
     makeEdgesFromBoard();
     vertices =edgesToVertices(edges);
 
@@ -539,11 +545,11 @@ int main() {
     vector<int> candidates = BFSalgorihm();
 
     set<int> _candidates(candidates.begin(), candidates.end());
-    showBoard(_candidates);
+//    showBoard(_candidates);
 
 
 
-//    writeToCout(bestVertices);
+    writeToCout(_candidates);
 //    writeToOutput("output.txt",bestVertices);
 //    cout<<"";
 
