@@ -11,6 +11,8 @@
 #include <deque>
 
 using namespace std;
+#include <stdexcept>
+
 
 #define WHITE 1
 #define GREY 2
@@ -389,7 +391,7 @@ bool isGraphEmpty(vector<bool> available){
     return true;
 }
 
-int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<bool>available){
+int getVertexWithDegreeOne(vector<set<int>> new_graph, vector<bool>available){
     for(int i=0;i<NVERTICES;i++){
         if(available[i] && new_graph[i].size()==1) {
             return i;
@@ -399,7 +401,7 @@ int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<bool>available){
 }
 
 
-int getVertexWithDegreeOne(vector<set<int>> new_graph, vector<bool>available){
+int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<bool>available){
     for(int i=0;i<NVERTICES;i++){
         if(available[i] && new_graph[i].empty()) {
             return i;
@@ -418,6 +420,9 @@ int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<bool>available)
                 vertex = i;
             }
         }
+    }
+    if(vertex==-56){
+        throw std::invalid_argument( "Vertex with minimum degree not found \n" );
     }
     return vertex;
 }
