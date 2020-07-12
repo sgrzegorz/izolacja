@@ -569,7 +569,12 @@ vector<int>  BFSalgorihm(){
             bestCandidates = candidates;
         }
     }
-    return bestCandidates;
+
+    vector<int>safePlaces;//zeby nie robic urzednikom klopotow
+    for(int i=0;i<K;i++){
+        safePlaces.push_back(bestCandidates[i]);
+    }
+    return safePlaces;
 }
 
 
