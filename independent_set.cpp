@@ -386,13 +386,16 @@ bool noAvailableVertices(vector<set<int>> vertices1,vector<bool> available){
 
 
 
-void removeVertex(vector<set<int>>& new_graph,int element){
-    new_graph[element].clear();
+void removeVertex(vector<set<int>>& new_graph,int element,vector<int>&available){
+    if(not available[element]) cout<<"Removing already removed vertex"<<endl;
+
     for(int i=0;i<new_graph.size();i++){
-        if(new_graph[i].find(element) != new_graph[i].end()){
+        if(available[i] && new_graph[i].find(element) != new_graph[i].end()){
             new_graph[i].erase(element);
         }
     }
+    new_graph[element].clear();
+    available[element] =false;
 
 }
 
@@ -402,7 +405,7 @@ void bfs(int start,vector<set<int>>& new_graph){
     vector<int> distances;
     vector<int> colours;
 
-    for(int i=0;i<vertices.size();i++){
+    for(int i=0;i<NVERTICES;i++){
         colours.push_back(WHITE);
         distances.push_back(INFTY);
     }
@@ -425,7 +428,7 @@ void bfs(int start,vector<set<int>>& new_graph){
         colours[u] =BLACK;
     }
 
-    for(int i=0;i<vertices.size();i++){
+    for(int i=0;i<NVERTICES;i++){
 
         if(i!=start && distances[i]<=L){
             new_graph[start].insert(i);
@@ -436,34 +439,38 @@ void bfs(int start,vector<set<int>>& new_graph){
 //    cout<<"ff";
 }
 
-int randomSubtreeRoot(vector<bool> available){
-    vector<int> theChosenOnes;
-    for(int i=0;i<available.size();i++){
-        if(available[i]) theChosenOnes.push_back(i);
-    }
-    int randomIndex = rand() % theChosenOnes.size();
-    return theChosenOnes[randomIndex];
-}
+//int randomSubtreeRoot(vector<bool> available){
+//    vector<int> theChosenOnes;
+//    for(int i=0;i<available.size();i++){
+//        if(available[i]) theChosenOnes.push_back(i);
+//    }
+//    int randomIndex = rand() % theChosenOnes.size();
+//    return theChosenOnes[randomIndex];
+//}
 
-int getVertexWithDegreeZero(vector<set<int>> new_graph){
-    for(int i=0;i<new_graph.size();i++){
-        if(new_graph[i].empty()) return i;
-    }
-    return -1;
-}
-
-bool isGraphEmpty(vector<set<int>> new_graph){
-    for(int i=0;i<new_graph.size();i++){
-        if(not new_graph[i].empty()) return false;
+bool isGraphEmpty(vector<int> available){
+    for(int i=0;i<NVERTICES;i++){
+        if(available[i]){
+            return false;
+        }
     }
     return true;
 }
 
-int getVertexWithMinimumDegree(vector<set<int>> new_graph){
+int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<int>available){
+    for(int i=0;i<new_graph.size();i++){
+        if(available[i] &&new_graph[i].empty()) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<int>available){
     int min=INFTY;
     int vertex =-56;
     for(int i=0;i<new_graph.size();i++){
-        if(not new_graph[i].empty()){
+        if(available[i] && not new_graph[i].empty()){
             if(new_graph[i].size() < min){
                 min = new_graph[i].size();
                 vertex = i;
@@ -473,48 +480,45 @@ int getVertexWithMinimumDegree(vector<set<int>> new_graph){
     return vertex;
 }
 
-vector<int> independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<int> removed){
+vector<int> independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<int> &available){
 
-    if(isGraphEmpty(new_graph)){
+    if(isGraphEmpty(available)){
         return iset;
     }
 
-    int vertexWithDegreeZeo = getVertexWithDegreeZero(new_graph);
-    if(vertexWithDegreeZeo!=-1){
-        iset.push_back(vertexWithDegreeZeo);
-        removeVertex(new_graph,vertexWithDegreeZeo);
-        removed[vertexWithDegreeZeo]=true;
-        return iset;
+    int vertexWithDegreeZero = getVertexWithDegreeZero(new_graph,available);
+    if(vertexWithDegreeZero!=-1){
+        iset.push_back(vertexWithDegreeZero);
+        removeVertex(new_graph,vertexWithDegreeZero,available);
+        independent_set(new_graph,iset,available);
 
     }else{
-        int vertexWithMinimumDegree = getVertexWithMinimumDegree(new_graph);
-
-        vector<set<int>>new_graph1 = verticesCopy(new_graph);
-        for(auto neigh : new_graph[vertexWithMinimumDegree]){
-            removeVertex(new_graph1,neigh);
-            removed[neigh]=true;
-
-//            new_graph1.remove(neigh)
-        }
-
-        removeVertex(new_graph1,vertexWithMinimumDegree);
-
-        vector<int> iset1(iset);
-        independent_set(new_graph1,iset1);
-
-        vector<set<int>>new_graph2 = verticesCopy(new_graph);
-        removeVertex(new_graph2,vertexWithMinimumDegree);
-        vector<int> iset2(iset);
-        independent_set(new_graph2,iset2);
-
-        if(iset1.size() > iset2.size()){
-            new_graph = new_graph1;
-            iset = iset1;
-            return iset1;
-        }
-        new_graph = new_graph2;
-        iset = iset2;
-        return iset2;
+//        int vertexWithMinimumDegree = getVertexWithMinimumDegree(new_graph,available);
+//
+//        vector<set<int>>new_graph1 = verticesCopy(new_graph); vector<int> available1(available);
+//        for(auto neigh : new_graph[vertexWithMinimumDegree]){
+//            removeVertex(new_graph1,neigh,available1);
+//        }
+//        removeVertex(new_graph1,vertexWithMinimumDegree,available1);
+//
+//        vector<int> iset1(iset);
+//        independent_set(new_graph1,iset1,available1);
+//
+//        vector<set<int>>new_graph2 = verticesCopy(new_graph); vector<int> available2(available);
+//        removeVertex(new_graph2,vertexWithMinimumDegree,available2);
+//        vector<int> iset2(iset);
+//        independent_set(new_graph2,iset2,available2);
+//
+//        if(iset1.size() > iset2.size()){
+//            new_graph = new_graph1;
+//            iset = iset1;
+//            available = available1;
+//        }else{
+//            new_graph = new_graph2;
+//            available = available2;
+//            iset = iset2;
+//        }
+    cout<<"!!!"<<endl;
     }
 
 
@@ -530,18 +534,22 @@ int main() {
     vertices =edgesToVertices(edges);
 
     vector<set<int>> new_graph;
-    for(int i=0;i<vertices.size();i++){
+    for(int i=0;i<NVERTICES;i++){
         new_graph.push_back(set<int>());
     }
 
 
 
-    for(int i=0;i<vertices.size();i++){
+    for(int i=0;i<NVERTICES;i++){
         bfs(i,new_graph);
     }
 
+    vector<int> available;
+    for(int i=0;i<NVERTICES;i++){
+        available.push_back(true);
+    }
     vector<int>candidates;
-    independent_set(new_graph,candidates);
+    independent_set(new_graph,candidates,available);
 
 
 
