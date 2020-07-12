@@ -430,7 +430,6 @@ int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<bool>available)
 void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool> &available){
 
     if(isGraphEmpty(available)){
-        cout<<"!"<<endl;
         return;
     }
 
@@ -506,6 +505,8 @@ void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<bool>
 }
 
 
+
+
 int main() {
     srand(time(0));
 
@@ -532,10 +533,16 @@ int main() {
     vector<int>candidates;
     independent_set(new_graph,candidates,available);
 
+    vector<int>safePlaces;//zeby nie robic urzednikom klopotow
+    int smaller = min(K,int(candidates.size()));
+    for(int i=0;i<smaller;i++){
+        safePlaces.push_back(candidates[i]);
+    }
 
 
 
-    set<int> _candidates(candidates.begin(), candidates.end());
+
+    set<int> _candidates(safePlaces.begin(), safePlaces.end());
     showBoard(_candidates);
 
 
