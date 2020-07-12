@@ -326,80 +326,10 @@ void showBoard(set<int>bestVertices){
 
 
 
-/////////////////////VRalgorithm////////////////////////////////////////////////////////////////////////////////////////////////
-
-void handleVertexSelection( vector<set<int>>&vertices1, vector<bool> &available,int i, int L){ //TODO check
-    if(L<=0) return;
-
-    set<int> neighbours(vertices1[i]);
-
-    for(auto neigh:neighbours){
-        available[neigh]= false;
-        if(L>0) handleVertexSelection(vertices1,available,neigh,L-1);
-    }
-}
+/////////////////////my independent set algorithm////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-bool noCandidatesInNeighbourhood( vector<set<int>>&vertices1, vector<bool> &available,set<int> &candidates,int i, int L){
-    if(L<=0) return true;
-
-    set<int> neighbours(vertices1[i]);
-
-    for(auto neigh:neighbours){
-        if(candidates.find(neigh) != candidates.end()){
-            return false;
-        }
-        return noCandidatesInNeighbourhood(vertices1,available,candidates,neigh,L-1);
-    }
-}
-
-
-int getRandomVertex(vector<bool> available){
-    int maximum_number = available.size()-1;
-    int minimum_number =0;
-    const int randomVertex = (rand() % (maximum_number + 1 - minimum_number)) + minimum_number;
-
-    if(available[randomVertex]) return randomVertex;
-    int i = randomVertex+1;
-    while(i!=randomVertex){
-        i = i%available.size();
-        if(available[i]) {
-            return i;
-        }
-        i++;
-    }
-
-
-    cout<<"Shouldnt ever print this statement, no available vertex found"<<endl;
-    return -1;
-
-}
-
-bool noAvailableVertices(vector<set<int>> vertices1,vector<bool> available){
-    //if no available return candidates
-    bool noAvailableVertex = true;
-    for (int i = 0; i < vertices1.size(); i++) {
-        if (available[i]) noAvailableVertex = false;
-    }
-    return noAvailableVertex;
-}
-
-
-
-void removeVertex(vector<set<int>>& new_graph,int element,vector<int>&available){
-    if(not available[element]) cout<<"Removing already removed vertex"<<endl;
-
-    for(int i=0;i<new_graph.size();i++){
-        if(available[i] && new_graph[i].find(element) != new_graph[i].end()){
-            new_graph[i].erase(element);
-        }
-    }
-    new_graph[element].clear();
-    available[element] =false;
-
-}
-
-void bfs(int start,vector<set<int>>& new_graph){
+void bfs(int start,vector<set<int>>&new_graph){
 
 // bsf
     vector<int> distances;
@@ -429,24 +359,26 @@ void bfs(int start,vector<set<int>>& new_graph){
     }
 
     for(int i=0;i<NVERTICES;i++){
-
         if(i!=start && distances[i]<=L){
             new_graph[start].insert(i);
             new_graph[i].insert(start);
         }
-
     }
-//    cout<<"ff";
 }
 
-//int randomSubtreeRoot(vector<bool> available){
-//    vector<int> theChosenOnes;
-//    for(int i=0;i<available.size();i++){
-//        if(available[i]) theChosenOnes.push_back(i);
-//    }
-//    int randomIndex = rand() % theChosenOnes.size();
-//    return theChosenOnes[randomIndex];
-//}
+void removeVertex(vector<set<int>>& new_graph,int element,vector<int>&available){
+    if(not available[element]) cout<<"Removing already removed vertex"<<endl;
+
+    for(int i=0;i<NVERTICES;i++){
+        if(available[i] && (new_graph[i].find(element) != new_graph[i].end())){
+            new_graph[i].erase(element);
+        }
+    }
+    new_graph[element].clear();
+    available[element] =false;
+
+}
+
 
 bool isGraphEmpty(vector<int> available){
     for(int i=0;i<NVERTICES;i++){
@@ -458,8 +390,8 @@ bool isGraphEmpty(vector<int> available){
 }
 
 int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<int>available){
-    for(int i=0;i<new_graph.size();i++){
-        if(available[i] &&new_graph[i].empty()) {
+    for(int i=0;i<NVERTICES;i++){
+        if(available[i] && new_graph[i].empty()) {
             return i;
         }
     }
@@ -469,7 +401,7 @@ int getVertexWithDegreeZero(vector<set<int>> new_graph, vector<int>available){
 int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<int>available){
     int min=INFTY;
     int vertex =-56;
-    for(int i=0;i<new_graph.size();i++){
+    for(int i=0;i<NVERTICES;i++){
         if(available[i] && not new_graph[i].empty()){
             if(new_graph[i].size() < min){
                 min = new_graph[i].size();
@@ -480,10 +412,10 @@ int getVertexWithMinimumDegree(vector<set<int>> new_graph,vector<int>available){
     return vertex;
 }
 
-vector<int> independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<int> &available){
+void independent_set(vector<set<int>> &new_graph, vector<int> &iset,vector<int> &available){
 
     if(isGraphEmpty(available)){
-        return iset;
+        return;
     }
 
     int vertexWithDegreeZero = getVertexWithDegreeZero(new_graph,available);
